@@ -6,7 +6,9 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="/manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <title>Swipe Feed</title>
@@ -181,6 +183,7 @@ textarea:focus{border-color:var(--fa)}
 .lrow .s{font-size:12px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lrow .a{font-size:13px;border:1px solid var(--ln);border-radius:14px;padding:6px 12px;flex:0 0 auto}
 .lsec{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin:14px 0 4px}
+[hidden]{display:none!important}
 .mrow{display:flex;align-items:center;gap:14px;min-height:60px;padding:8px 2px;border-bottom:1px solid var(--sf);text-align:left;width:100%}
 .mrow .ic{width:40px;height:40px;border-radius:12px;border:1px solid var(--ln);display:grid;place-items:center;flex:0 0 auto}
 .mrow .b{flex:1;display:flex;flex-direction:column;gap:2px}
@@ -370,6 +373,7 @@ textarea:focus{border-color:var(--fa)}
   <button class="mrow" id="mBatch"><span class="ic"><svg class="i"><use href="#i-plus"/></svg></span><span class="b"><b>New batch request</b><span>Ask Claude for new drafts, with reference images</span></span></button>
   <button class="mrow" id="mAct"><span class="ic"><svg class="i"><use href="#i-menu"/></svg></span><span class="b"><b>Activity</b><span id="mActSub">Your edit and batch requests</span></span></button>
   <button class="mrow" id="mSkip"><span class="ic"><svg class="i"><use href="#i-restore"/></svg></span><span class="b"><b>Skipped</b><span>Everything you passed on, with Restore</span></span></button>
+  <button class="mrow" id="mInstall" hidden><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg></span><span class="b"><b>Install app</b><span>Home screen icon, opens full screen</span></span></button>
   <button class="mrow" id="mOut"><span class="ic"><svg class="i"><use href="#i-out"/></svg></span><span class="b"><b>Sign out</b><span>Passphrase login on this device</span></span></button>
 </section>
 <section class="sheet" id="shAct">
@@ -1114,6 +1118,12 @@ async function pulse() {
   } catch {}
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) pulse(); });
+// installable app: service worker + Chrome's install prompt, offered in the menu
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+let installEv = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEv = e; $('#mInstall').hidden = false; });
+addEventListener('appinstalled', () => { installEv = null; $('#mInstall').hidden = true; toast('Installed. Open it from your home screen.'); });
+$('#mInstall').onclick = async () => { if (!installEv) return; installEv.prompt(); await installEv.userChoice.catch(() => {}); installEv = null; $('#mInstall').hidden = true; };
 let started = false;
 function start() {
   loadQueue().then(pulse);
