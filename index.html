@@ -352,6 +352,12 @@ textarea:focus{border-color:var(--fa)}
   <div class="refs" id="eRefs"></div>
   <button class="primary" id="eGo">Send to Claude</button>
 </section>
+<section class="sheet" id="shMid">
+  <div class="grab"></div>
+  <h3>Mid<button class="x" data-close>Cancel</button></h3>
+  <textarea id="mTxt" rows="4" autocapitalize="sentences" spellcheck="true" placeholder="What's missing? (optional)"></textarea>
+  <button class="primary" id="mGo">Save as mid</button>
+</section>
 <section class="sheet" id="shWhy">
   <div class="grab"></div>
   <h3 id="wHead">Why?<button class="x" data-close>Cancel</button></h3>
@@ -538,11 +544,11 @@ function drawActs(it) {
     ? `<button class="act" data-a="pass"><span class="c">${icon('x')}</span>${it.mode === 'idea' ? 'No' : 'Nope'}</button>
        <button class="act sm" data-a="why"><span class="c">${icon('pen')}</span>Why</button>
        <button class="act main" data-a="love"><span class="c">${icon('heart')}</span>${loveLabel}</button>`
-    : `<button class="act" data-a="pass"><span class="c">${icon('x')}</span>Pass</button>
-       <button class="act sm" data-a="later"><span class="c">${icon('clock')}</span>Later</button>
+    : `<button class="act" data-a="pass"><span class="c">${icon('x')}</span>Trash</button>
+       <button class="act sm" data-a="mid"><span class="c">${icon('clock')}</span>Mid</button>
        <button class="act sm" data-a="edit"><span class="c">${icon('pen')}</span>Edit</button>
-       <button class="act main" data-a="pick"><span class="c">${icon('check')}</span>Pick</button>`;
-  $$('#qActs .act').forEach(b => b.onclick = () => ({pass: skip, why: openWhy, love, later, edit: () => openEdit(VIEW[idx]), pick: openPick})[b.dataset.a]());
+       <button class="act main" data-a="pick"><span class="c">${icon('heart')}</span>Love</button>`;
+  $$('#qActs .act').forEach(b => b.onclick = () => ({pass: skip, why: openWhy, love, later, mid: openMid, edit: () => openEdit(VIEW[idx]), pick: openPick})[b.dataset.a]());
   const h = it.mode === 'idea' ? 'Right: want · Left: no · Up: why or your own idea' : it.mode === 'train' ? 'Right: love · Left: nope · Up: tell me why' : 'Right: pick · Left: pass · Up: later';
   $('#qHint').textContent = h; $('#qHint').hidden = store.get('sf2.hint') === '1';
 }
@@ -667,6 +673,18 @@ $$('#shWhy [data-lean]').forEach(b => b.onclick = async () => {
   try { await api('/api/decide', {id: it.id, action: 'why', note, lean: b.dataset.lean}); closeSheet(true); advance('up'); toast('Saved with your reason', () => undoTo(it)); }
   catch (e) { softErr(e); }
 });
+
+// ================= mid: fine but not good enough (optional note) =================
+function openMid() {
+  const it = VIEW[idx]; if (!it) return;
+  if (current) current.style.transform = 'translateY(-40px)';
+  $('#mTxt').value = ''; openSheet('#shMid'); setTimeout(() => $('#mTxt').focus({preventScroll: true}), 320);
+}
+$('#mGo').onclick = async () => {
+  const it = VIEW[idx], note = $('#mTxt').value.trim(); if (!it) return;
+  try { await api('/api/decide', {id: it.id, action: 'mid', note}); closeSheet(true); advance('up'); toast('Mid', () => undoTo(it)); }
+  catch (e) { softErr(e); }
+};
 
 // ================= edit request (from a swipe card or the post detail) =================
 let editTarget = null;
