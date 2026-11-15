@@ -55,7 +55,20 @@ nav.tabs .badge{position:absolute;top:2px;left:50%;margin-left:7px;min-width:17p
 .cap{margin:0;font-size:16px;line-height:1.42;white-space:pre-wrap;word-break:break-word}
 .textonly .cap{font-size:20px;line-height:1.35}
 .cmedia{flex:1 1 auto;min-height:220px;border-radius:12px;background:var(--sf);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;touch-action:none}
-.cmedia video,.cmedia img{max-width:100%;max-height:100%;width:auto;height:100%;object-fit:contain;display:block}
+.cmedia img{max-width:100%;max-height:100%;width:auto;height:100%;object-fit:contain;display:block}
+/* the video box always fills the media area and carries its own aspect ratio from the item's w/h, so nothing moves while it loads */
+.cmedia video{width:100%;height:100%;object-fit:contain;display:block}
+.cmedia video::-webkit-media-controls,.cmedia video::-webkit-media-controls-start-playback-button{display:none!important;-webkit-appearance:none}
+.pp{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:32px;background:rgba(12,10,9,.55);display:grid;place-items:center;z-index:2;opacity:0;pointer-events:none;transition:opacity .15s}
+.pp svg{width:26px;height:26px;fill:#fff;margin-left:4px}
+.cmedia.paused .pp{opacity:1;pointer-events:auto}
+.vs{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border:3px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;opacity:0;pointer-events:none;transition:opacity .15s;z-index:2}
+.cmedia.wait:not(.paused) .vs{opacity:1;transition-delay:.35s}
+.ctext{display:contents}
+.train .cmedia{order:1}.train .cmeta.after{order:2}
+.clabel{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--mu)}
+.clabel .an{color:var(--fg);font-weight:600}
+.clabel .id::before{content:'· ';color:var(--fa)}
 .train .cmedia{flex:none;min-height:0;background:#000}
 .train .cmedia img,.train .cmedia video{width:100%;height:auto;max-height:60vh}
 .snd{position:absolute;right:8px;bottom:8px;width:34px;height:34px;border-radius:17px;background:rgba(12,10,9,.6);display:grid;place-items:center;color:#fff}
@@ -99,6 +112,31 @@ nav.tabs .badge{position:absolute;top:2px;left:50%;margin-left:7px;min-width:17p
 .post .tm{position:absolute;left:6px;bottom:6px;font-size:10px;font-weight:600;background:rgba(255,255,255,.94);border-radius:5px;padding:2px 6px}
 .post .c{font-size:13px;line-height:1.38;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .blank{padding:60px 24px;text-align:center;color:var(--mu);font-size:14px}
+/* ---------- library: one heading per idea, its loved videos listed under it, grouped by angle ---------- */
+.llist{padding:0 16px 24px}
+.lidea{margin:22px 0 2px;font-size:18px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:baseline;gap:8px}
+.lidea span{font-size:12px;font-weight:500;color:var(--mu)}
+.lidea:first-child{margin-top:6px}
+.lang{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--ln)}
+.lang h3{margin:0 0 10px;font-size:14px;font-weight:600;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.lang h3 .tag{font-size:11px}
+.lang h3 span.n{font-size:12px;font-weight:500;color:var(--mu)}
+.lvid{display:flex;flex-direction:column;gap:10px;padding:0 0 16px}
+.lvid+.lvid{padding-top:14px;border-top:1px dashed var(--ln)}
+.lm{margin:0 -16px;background:var(--sf);position:relative}
+.lm video,.lm img{width:100%;height:auto;display:block;background:#000}
+.lm img{background:var(--sf)}
+.lt{display:flex;flex-direction:column;gap:8px;min-width:0}
+.lhd{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--mu)}
+.mustb{background:var(--amber-bg);color:var(--amber);border-radius:6px;padding:2px 7px;font-weight:600;font-size:11px}
+.lc{margin:0;font-size:15px;line-height:1.42;white-space:pre-wrap;word-break:break-word}
+.la{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ob.must{background:var(--amber-bg);color:var(--amber);border-color:transparent}
+.pmust{margin-top:12px;height:46px;border-radius:12px;border:1px solid var(--ln);display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:600;width:100%;flex:0 0 auto}
+.pmust.on{background:var(--amber-bg);color:var(--amber);border-color:transparent}
+.dmain,.dside{display:contents}
+.libbar{padding:0 16px 12px}
+@media (min-width:900px){.libbar{padding:0 24px 12px;max-width:640px}}
 /* ---------- detail ---------- */
 #detail{position:fixed;inset:0;z-index:30;background:#fff;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1);padding-top:env(safe-area-inset-top)}
 #detail.on{transform:none}
@@ -215,6 +253,57 @@ textarea:focus{border-color:var(--fa)}
 #login input{width:100%;border:1px solid var(--ln);border-radius:12px;font:inherit;font-size:17px;padding:14px;outline:none}
 .spin{width:18px;height:18px;border:2px solid var(--ln);border-top-color:var(--fg);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(1turn)}}
+/* ---------- laptop / desktop (phones never see this): tab rail on the left, everything sized to the window, no page scrolling ---------- */
+@media (min-width:900px){
+  body{display:grid;grid-template-columns:84px minmax(0,1fr);grid-template-rows:minmax(0,1fr);padding-top:0}
+  .view{grid-column:2;grid-row:1}
+  nav.tabs{grid-column:1;grid-row:1;flex-direction:column;justify-content:flex-start;gap:4px;border-top:0;border-right:1px solid var(--ln);padding:16px 6px}
+  nav.tabs button{flex:0 0 auto;padding:10px 0;border-radius:12px}
+  nav.tabs button:hover{background:var(--sf2)}
+  nav.tabs .badge{top:4px}
+  .top{padding:12px 24px 4px}
+  .top h1{font-size:22px}
+  .sub{padding:0 24px 8px}
+  .chips{padding:4px 24px 8px}
+  .ib:hover,.ob:hover,.act:hover span.c,.chip:hover,.pill:hover{background:var(--sf2)}
+  .act.main:hover span.c{background:#292524}
+  /* swipe: card in the middle, actions in a column on its right */
+  #vSwipe.on{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr) auto;position:relative}
+  #stack{grid-row:3;margin:0 120px 0 24px;container-type:size}
+  /* placed right next to the card by placeActs() */
+  #qActs{position:absolute;right:16px;width:96px;flex-direction:column-reverse;justify-content:center;align-items:center;gap:18px;padding:0}
+  .act.sm{padding-top:0}
+  .hint{grid-row:4;padding:8px 0 10px}
+  .card{left:0;right:0;margin:0 auto;width:min(100%,780px)}
+  /* media + text side by side; the media is exactly as tall as the card and as wide as its aspect ratio allows */
+  .card.hasm{width:min(100%,calc((100cqh - 42px) * var(--arn,.8) + 452px))}
+  .card.hasm .cbody{flex-direction:row;overflow:hidden;padding:16px;gap:18px}
+  .card.hasm .cmedia{order:-1;flex:0 0 auto;width:calc((100cqh - 42px) * var(--arn,.8));max-width:calc(100% - 278px);height:100%;min-height:0;min-width:0}
+  .card.hasm .cmedia img,.card.hasm .cmedia video{width:100%;height:100%;max-width:none;max-height:none;object-fit:contain}
+  .card.hasm .ctext{display:flex;flex-direction:column;gap:10px;flex:1 1 400px;min-width:260px;max-width:400px;overflow:auto;padding-right:2px}
+  .card.textonly .cap{font-size:22px}
+  /* library */
+  .llist{padding:0 24px 32px;max-width:1240px}
+  .lvid{flex-direction:row;align-items:flex-start;gap:24px}
+  .lm{margin:0;flex:0 0 auto;width:min(560px,calc((100dvh - 200px) * var(--arn,.8)));border-radius:12px;overflow:hidden}
+  .lt{flex:1 1 auto;max-width:560px;padding-top:2px}
+  .la{grid-template-columns:repeat(3,max-content)}
+  .la .ob{padding:0 16px}
+  .pgrid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));padding:0 24px;max-width:1240px}
+  .pday{margin:16px 24px 10px}
+  /* post detail: the whole video on the left (fits the window), captions and actions on the right */
+  #detail .dtop{padding:8px 20px 6px;border-bottom-color:var(--ln)}
+  #detail .dscroll{display:flex;overflow:hidden;padding-bottom:0}
+  #detail .dmain{display:block;flex:1 1 auto;min-width:0;overflow:auto;padding:4px 8px 16px}
+  #detail .dside{display:block;flex:0 0 420px;overflow:auto;border-left:1px solid var(--ln);padding-bottom:32px}
+  #detail .dside .sec:first-child{padding-top:14px}
+  #detail .dbar{max-width:760px;margin:0 auto}
+  #detail .stage{margin:0 auto;width:min(100%,calc((100dvh - 150px) * var(--arn,.8)))}
+  #detail.imgs .stage{width:min(100%,calc((100dvh - 250px) * var(--arn,.8)))}
+  #detail.tool .stage{width:min(100%,calc((100dvh - 390px) * var(--arn,.8)))}
+  #detail .tool{max-width:760px;margin:12px auto 0}
+  #detail .row4{max-width:760px;margin:0 auto}
+}
 </style>
 </head>
 <body>
@@ -241,6 +330,7 @@ textarea:focus{border-color:var(--fa)}
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>
   <symbol id="i-done" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8 12.3l2.7 2.7L16 9.5"/></symbol>
   <symbol id="i-xlogo" viewBox="0 0 24 24"><path d="M4 4l16 16M20 4L4 20"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z" style="stroke:none"/></symbol>
   <symbol id="i-img" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></symbol>
 </svg>
 
@@ -258,9 +348,9 @@ textarea:focus{border-color:var(--fa)}
 <!-- ============ Library ============ -->
 <section class="view" id="vLib">
   <div class="top"><h1>Library</h1><button class="ib" data-menu aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg><i class="dot" data-reqdot hidden></i></button></div>
-  <p class="sub">Everything you picked or sent back for edits</p>
-  <div style="padding:0 16px 12px"><div class="seg" id="libSeg"><button data-f="all" class="on">All</button><button data-f="picked">Picked</button><button data-f="edit">In edit</button></div></div>
-  <div class="scroll"><div class="grid" id="libGrid"></div><div class="blank" id="libBlank" hidden></div></div>
+  <p class="sub">Everything you loved or sent back for edits, by idea</p>
+  <div class="libbar"><div class="seg" id="libSeg"><button data-f="all" class="on">All</button><button data-f="picked">Loved</button><button data-f="edit">In edit</button><button data-f="must">★ Must</button></div></div>
+  <div class="scroll" id="libScroll"><div class="llist" id="libList"></div><div class="blank" id="libBlank" hidden></div></div>
 </section>
 
 <!-- ============ Posted ============ -->
@@ -284,6 +374,7 @@ textarea:focus{border-color:var(--fa)}
     <span class="st" id="dStatus"></span>
   </div>
   <div class="dscroll" id="dScroll">
+   <div class="dmain" id="dMain">
     <div class="dbar">
       <div class="seg" id="dSeg"><button data-side="video">Video</button><button data-side="image">Image</button></div>
       <button class="shotbtn" id="dShotBtn" aria-label="Take screenshot"><svg class="i" style="width:18px;height:18px"><use href="#i-cam"/></svg>Screenshot</button>
@@ -311,6 +402,8 @@ textarea:focus{border-color:var(--fa)}
       <button class="primary" id="tCap"><svg class="i" style="width:18px;height:18px"><use href="#i-cam"/></svg>Capture this frame</button>
       <p class="note" id="tNote">Saved full size under this post, in Images</p>
     </div>
+   </div>
+   <div class="dside" id="dSide">
 
     <div class="sec">
       <div class="hd"><h2>Caption</h2><button id="dCapEdit">Edit text</button></div>
@@ -327,10 +420,12 @@ textarea:focus{border-color:var(--fa)}
         <button class="ob" data-da="x" style="height:48px">Open in X</button>
         <button class="ob" data-da="edit" style="height:48px">Request edit</button>
       </div>
+      <button class="ob" id="dMust" style="height:48px"></button>
       <button class="primary" id="dPosted" style="margin-top:4px"></button>
       <p class="note" id="dShareNote">Share sends what's showing above (video or image) with the caption. Nothing posts by itself.</p>
     </div>
     <div class="info" id="dInfo"></div>
+   </div>
   </div>
 </section>
 
@@ -338,12 +433,13 @@ textarea:focus{border-color:var(--fa)}
 <div class="scrim" id="scrim"></div>
 <section class="sheet" id="shPick">
   <div class="grab"></div>
-  <h3>Pick this<button class="x" data-close>Cancel</button></h3>
+  <h3>Love this<button class="x" data-close>Cancel</button></h3>
   <textarea id="pCap" rows="3" autocapitalize="sentences" spellcheck="true" placeholder="Caption"></textarea>
   <div class="count" id="pCount"></div>
   <div class="alts" id="pAlts"></div>
-  <button class="primary" id="pGo">Pick with this caption</button>
-  <p class="note" style="margin-top:8px">Saves it to your Library with this caption. Nothing gets posted.</p>
+  <button class="pmust" id="pMust" aria-pressed="false"></button>
+  <button class="primary" id="pGo">Love with this caption</button>
+  <p class="note" style="margin-top:8px" id="pNote">Saves it to your Library with this caption. Nothing gets posted.</p>
 </section>
 <section class="sheet" id="shEdit">
   <div class="grab"></div>
@@ -351,12 +447,6 @@ textarea:focus{border-color:var(--fa)}
   <textarea id="eTxt" rows="4" autocapitalize="sentences" spellcheck="true" placeholder="e.g. drop Grok, shorter title, halftone instead"></textarea>
   <div class="refs" id="eRefs"></div>
   <button class="primary" id="eGo">Send to Claude</button>
-</section>
-<section class="sheet" id="shMid">
-  <div class="grab"></div>
-  <h3>Mid<button class="x" data-close>Cancel</button></h3>
-  <textarea id="mTxt" rows="4" autocapitalize="sentences" spellcheck="true" placeholder="What's missing? (optional)"></textarea>
-  <button class="primary" id="mGo">Save as mid</button>
 </section>
 <section class="sheet" id="shWhy">
   <div class="grab"></div>
@@ -438,7 +528,8 @@ function showTab(t) {
   $$('.view').forEach(v => v.classList.toggle('on', v.id === t));
   $$('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
   $$('.card video').forEach(v => (t === 'vSwipe' ? null : v.pause()));
-  if (t === 'vSwipe') { const v = current && current.querySelector('video'); v && v.play().catch(() => {}); }
+  if (t !== 'vLib') $$('#libList video').forEach(v => v.pause());
+  if (t === 'vSwipe' && current) { playVid(current.querySelector('video')); placeActs(); }
   if (t === 'vLib') loadLib();
   if (t === 'vPosted') loadPosted();
 }
@@ -488,17 +579,36 @@ async function mergeQueue() {
   } catch {} finally { merging = false; }
 }
 
+// Draft titles look like "C6-2 A · the cheap one · exchange counter (halftone, music)" or "C7-3 · Odometers (halftone, music)":
+// idea code C6, angle C6-2, take A/B, angle name, scene. it.idea is the idea's text ("C6 OpenTTD transport empire").
+const TRE = /^([A-Z]+\d+)-(\w+)(?:\s+([AB]))?\s*·\s*([^·]*?)\s*(?:·\s*(.*))?$/;
+const clean = s => String(s || '').replace(/\s*\([^()]*\)\s*(v\d+)?\s*$/, '').trim();
+function angleOf(it) {
+  const t = String(it.title || '').trim(), m = TRE.exec(t), idea = String(it.idea || '').trim();
+  if (!m) return {code: null, angle: null, ab: null, name: shortTitle(t), scene: '', idea};
+  return {code: m[1], angle: m[1] + '-' + m[2], ab: m[3] || null, name: m[5] != null ? m[4].trim() : clean(m[4]), scene: m[5] != null ? clean(m[5]) : '', idea};
+}
+const arOf = it => (it.w && it.h ? {ar: it.w + '/' + it.h, arn: (it.w / it.h).toFixed(4)} : {ar: '', arn: '0.8'});
+const PLAY = '<svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>';
+
 function mediaHtml(it) {
   if (!it.media) return '';
+  const {ar} = arOf(it);
   const sound = `<button class="snd" aria-label="Sound">${icon('mute')}</button>`;
-  return `<div class="cmedia"${it.mode === 'train' && it.w ? ` style="aspect-ratio:${it.w}/${it.h}"` : ''}>` + (it.kind === 'video'
-    ? `<video src="${it.media}" ${it.poster ? `poster="${it.poster}"` : ''} muted loop playsinline preload="metadata"></video>${sound}`
+  // video: poster + aspect ratio from the item, so the box (and the play button) never moves; preload so the next card starts at once
+  return `<div class="cmedia${it.kind === 'video' ? ' wait' : ''}"${it.mode === 'train' && ar ? ` style="aspect-ratio:${ar}"` : ''}>` + (it.kind === 'video'
+    ? `<video src="${it.media}" ${it.poster ? `poster="${it.poster}"` : ''}${ar ? ` style="aspect-ratio:${ar}"` : ''} muted loop playsinline preload="auto"></video><button class="pp" aria-label="Play">${PLAY}</button><span class="vs"></span>${sound}`
     : `<img src="${it.media}" alt="">`) + '</div>';
+}
+function playVid(v) {
+  if (!v) return;
+  const box = v.closest('.cmedia');
+  const p = v.play(); if (p && p.catch) p.catch(() => { if (box) { box.classList.remove('wait'); box.classList.add('paused'); } });
 }
 function parseQuote(s) { try { return JSON.parse(s); } catch { return {who: 'Quoted post', text: s}; } }
 function cardEl(it) {
   const c = document.createElement('div');
-  const stamps = it.mode === 'idea' ? ['WANT', 'NO', 'WHY'] : it.mode === 'train' ? ['LOVE', 'NOPE', 'WHY'] : ['PICK', 'PASS', 'LATER'];
+  const stamps = it.mode === 'idea' ? ['WANT', 'NO', 'WHY'] : it.mode === 'train' ? ['LOVE', 'NOPE', 'WHY'] : ['LOVE', 'TRASH', 'EDIT'];
   let inner;
   if (it.mode === 'idea') {
     const dir = (it.alts || [])[0] || '';
@@ -508,53 +618,81 @@ function cardEl(it) {
       (it.source ? `<div class="cmeta">${esc(it.source)}</div>` : '');
   } else if (it.mode === 'train') {
     const q = it.quote ? parseQuote(it.quote) : null;
-    c.className = 'card train' + (it.media ? '' : ' textonly');
-    inner = `<p class="cap">${esc(it.caption)}</p>${q ? `<div class="box"><b>${esc(q.who)}</b>${esc(q.text)}</div>` : ''}${mediaHtml(it)}<div class="cmeta">Training · ${esc(it.num ?? '')}</div>`;
+    c.className = 'card train' + (it.media ? ' hasm' : ' textonly');
+    inner = `<div class="ctext"><p class="cap">${esc(it.caption)}</p>${q ? `<div class="box"><b>${esc(q.who)}</b>${esc(q.text)}</div>` : ''}<div class="cmeta after">Training · ${esc(it.num ?? '')}</div></div>${mediaHtml(it)}`;
   } else {
     const extra = [it.numbers && `<div class="box"><b>Numbers</b>${esc(it.numbers)}</div>`, it.source && `<div class="box"><b>Source</b>${esc(it.source)}</div>`,
       (it.alts || []).length && `<div class="box"><b>Other captions</b>${it.alts.map(a => '“' + esc(a) + '”').join('\n\n')}</div>`].filter(Boolean).join('');
-    c.className = 'card';
-    inner = `<div class="cmeta">${it.updated ? '<span class="tag">Updated</span>' : ''}${it.deferred ? '<span class="tag l">Later</span>' : ''}<span>${esc(shortTitle(it.title))}${it.v > 1 ? ' · v' + it.v : ''}</span>${extra ? ' · <button class="linkbtn mb">details</button>' : ''}</div>
-      <p class="cap">${esc(it.caption || it.title)}</p><div class="more">${extra}</div>${mediaHtml(it)}`;
+    const a = angleOf(it), ideaTxt = a.idea || it.batch || '';
+    const label = a.angle ? `<div class="clabel"><span class="tag">${esc(a.angle)}${a.ab ? ' ' + a.ab : ''}</span><span class="an">${esc(a.name)}</span>${ideaTxt ? `<span class="id">${esc(ideaTxt)}</span>` : ''}</div>`
+      : ideaTxt ? `<div class="clabel"><span class="tag l">${esc(ideaTxt)}</span></div>` : '';
+    const what = a.angle ? a.scene : shortTitle(it.title);
+    c.className = 'card' + (it.media ? ' hasm' : '');
+    inner = `<div class="ctext">${label}<div class="cmeta">${it.updated ? '<span class="tag">Updated</span>' : ''}${it.deferred ? '<span class="tag l">Later</span>' : ''}${what || it.v > 1 ? `<span>${esc(what)}${it.v > 1 ? (what ? ' · ' : '') + 'v' + it.v : ''}</span>` : ''}${extra ? (what || it.v > 1 ? ' · ' : '') + '<button class="linkbtn mb">details</button>' : ''}</div>
+      <p class="cap">${esc(it.caption || it.title)}</p><div class="more">${extra}</div></div>${mediaHtml(it)}`;
   }
+  c.dataset.id = it.id; c.dataset.v = it.v;
+  c.style.setProperty('--arn', arOf(it).arn);
   c.innerHTML = `<div class="stamp r">${stamps[0]}</div><div class="stamp l">${stamps[1]}</div><div class="stamp u">${stamps[2]}</div><div class="cbody">${inner}</div>`;
   const mb = c.querySelector('.mb'); if (mb) mb.onclick = e => { e.stopPropagation(); c.querySelector('.more').classList.toggle('on'); };
   const v = c.querySelector('video'), s = c.querySelector('.snd');
   if (s) s.onclick = e => { e.stopPropagation(); v.muted = !v.muted; s.innerHTML = icon(v.muted ? 'mute' : 'sound'); };
+  if (v) {
+    const box = v.closest('.cmedia');
+    v.addEventListener('playing', () => box.classList.remove('wait', 'paused'));
+    v.addEventListener('waiting', () => box.classList.add('wait'));
+    v.addEventListener('pause', () => { box.classList.remove('wait'); box.classList.add('paused'); });
+    c.querySelector('.pp').onclick = e => { e.stopPropagation(); playVid(v); };
+    // tap / click on the video = pause / play (not after a drag)
+    c.addEventListener('click', e => { if (c._moved || e.target.closest('button,a,.more') || !e.target.closest('.cmedia')) return; v.paused ? playVid(v) : v.pause(); });
+  }
   return c;
 }
 function render() {
-  $$('.card').forEach(c => c.remove());
-  const left = VIEW.length - idx;
+  const left = VIEW.length - idx, it = VIEW[idx], next = VIEW[idx + 1];
+  // the card behind already loaded its video: promote it instead of building the same card again
+  const back = $('#stack .card.back'), reuse = it && back && back.dataset.id === it.id && back.dataset.v === String(it.v) ? back : null;
+  $$('.card').forEach(c => c !== reuse && c.remove());
   $('#qCount').textContent = left ? left + ' to review' : '';
   $('#qEmpty').style.display = left ? 'none' : 'flex';
   $('#qActs').style.visibility = left ? 'visible' : 'hidden';
   current = null;
   if (!left) { $('#qHint').hidden = true; return; }
-  const it = VIEW[idx], next = VIEW[idx + 1];
   if (next) { const b = cardEl(next); b.classList.add('back'); $('#stack').prepend(b); }
-  current = cardEl(it); $('#stack').appendChild(current);
-  const v = current.querySelector('video'); if (v && tab === 'vSwipe') v.play().catch(() => {});
+  if (reuse) { current = reuse; current.classList.remove('back'); current.style.transform = ''; current.style.opacity = ''; }
+  else { current = cardEl(it); $('#stack').appendChild(current); }
+  if (tab === 'vSwipe' && !D.open) playVid(current.querySelector('video'));
   attachDrag(current, it);
-  drawActs(it);
+  drawActs(it); placeActs();
 }
+// laptop: the Trash / Edit / Love column sits just right of the card (the card's width follows its video)
+function placeActs() {
+  const a = $('#qActs'), st = $('#stack');
+  if (!wide.matches || !current || !st.offsetHeight) { a.style.left = a.style.top = a.style.height = ''; return; }
+  a.style.top = st.offsetTop + 'px'; a.style.height = st.offsetHeight + 'px';
+  a.style.left = Math.min(st.offsetLeft + current.offsetLeft + current.offsetWidth + 16, $('#vSwipe').clientWidth - 104) + 'px';
+}
+addEventListener('resize', placeActs);
+const wide = matchMedia('(min-width:900px)');
 function drawActs(it) {
   const card = isCard(it), loveLabel = it.mode === 'idea' ? 'Want' : 'Love';
+  // drafts (Ananth 2026-11-15): Trash · Edit · Love. Mid and Later are gone from the card.
   $('#qActs').innerHTML = card
     ? `<button class="act" data-a="pass"><span class="c">${icon('x')}</span>${it.mode === 'idea' ? 'No' : 'Nope'}</button>
        <button class="act sm" data-a="why"><span class="c">${icon('pen')}</span>Why</button>
        <button class="act main" data-a="love"><span class="c">${icon('heart')}</span>${loveLabel}</button>`
     : `<button class="act" data-a="pass"><span class="c">${icon('x')}</span>Trash</button>
-       <button class="act sm" data-a="mid"><span class="c">${icon('clock')}</span>Mid</button>
        <button class="act sm" data-a="edit"><span class="c">${icon('pen')}</span>Edit</button>
        <button class="act main" data-a="pick"><span class="c">${icon('heart')}</span>Love</button>`;
-  $$('#qActs .act').forEach(b => b.onclick = () => ({pass: skip, why: openWhy, love, later, mid: openMid, edit: () => openEdit(VIEW[idx]), pick: openPick})[b.dataset.a]());
-  const h = it.mode === 'idea' ? 'Right: want · Left: no · Up: why or your own idea' : it.mode === 'train' ? 'Right: love · Left: nope · Up: tell me why' : 'Right: pick · Left: pass · Up: later';
-  $('#qHint').textContent = h; $('#qHint').hidden = store.get('sf2.hint') === '1';
+  $$('#qActs .act').forEach(b => b.onclick = () => { b.blur(); ({pass: skip, why: openWhy, love, edit: () => openEdit(VIEW[idx]), pick: openPick})[b.dataset.a](); });
+  const keys = it.mode === 'idea' ? 'Keys: ← no · → want · ↑ why' : it.mode === 'train' ? 'Keys: ← nope · → love · ↑ why' : 'Keys: ← trash · → love · E edit · Space play/pause';
+  const h = it.mode === 'idea' ? 'Right: want · Left: no · Up: why or your own idea' : it.mode === 'train' ? 'Right: love · Left: nope · Up: tell me why' : 'Right: love · Left: trash · Up: edit';
+  $('#qHint').textContent = wide.matches ? h + '  ·  ' + keys : h; $('#qHint').hidden = !wide.matches && store.get('sf2.hint') === '1';
 }
 function advance(dir) {
   const c = current; if (!c) return;
   c.style.transform = dir === 'up' ? 'translateY(-115%)' : `translateX(${dir * 130}%) rotate(${dir * 18}deg)`; c.style.opacity = 0;
+  const v = c.querySelector('video'); if (v) v.pause();
   store.set('sf2.hint', '1');
   const it = VIEW[idx]; if (it) { handled.set(it.id, Date.now()); ITEMS = ITEMS.filter(x => x.id !== it.id); }
   busy = true; idx++; drawChips();
@@ -562,12 +700,12 @@ function advance(dir) {
 }
 function snapBack() { if (!current) return; current.style.transform = ''; current.querySelectorAll('.stamp').forEach(s => s.style.opacity = 0); }
 function attachDrag(c, it) {
-  // horizontal = pick / pass; up = vertical drag that starts on the media (or anywhere on a short text card). Text still scrolls.
+  // horizontal = love / trash; up = vertical drag that starts on the media (or anywhere on a short text card). Text still scrolls.
   let x0 = 0, y0 = 0, dx = 0, dy = 0, on = false, horiz = null, up = false, upOk = false, id = null;
   const train = isCard(it);
   c.addEventListener('pointerdown', e => {
     if (e.target.closest('button,a,.more')) return;
-    x0 = e.clientX; y0 = e.clientY; dx = 0; dy = 0; on = true; horiz = null; up = false; id = e.pointerId;
+    x0 = e.clientX; y0 = e.clientY; dx = 0; dy = 0; on = true; horiz = null; up = false; id = e.pointerId; c._moved = false;
     const body = c.querySelector('.cbody'), scrolls = body.scrollHeight > body.clientHeight + 4;
     upOk = !!e.target.closest('.cmedia') || !scrolls || (body.scrollTop + body.clientHeight >= body.scrollHeight - 2);
   });
@@ -575,6 +713,7 @@ function attachDrag(c, it) {
     if (!on || e.pointerId !== id) return;
     const ddx = e.clientX - x0, ddy = e.clientY - y0;
     if (horiz === null && Math.hypot(ddx, ddy) > 8) {
+      c._moved = true;
       horiz = Math.abs(ddx) > Math.abs(ddy); up = !horiz && upOk && ddy < 0;
       if (horiz || up) { c.setPointerCapture(id); c.classList.add('drag'); }
     }
@@ -586,7 +725,7 @@ function attachDrag(c, it) {
   });
   const end = () => {
     if (!on) return; on = false; c.classList.remove('drag');
-    if (up) { if (dy < -80) (train ? openWhy() : later()); else snapBack(); return; }
+    if (up) { if (dy < -80) (train ? openWhy() : openEdit(VIEW[idx])); else snapBack(); return; }
     if (!horiz) return;
     if (dx > 70) (train ? love() : openPick()); else if (dx < -70) skip(); else snapBack();
   };
@@ -613,19 +752,6 @@ async function undoTo(it) {
     rebuild(it.id);
   } catch (e) { softErr(e); }
 }
-async function later() {
-  const it = VIEW[idx]; if (!it) return;
-  if (VIEW.length - idx < 2) { snapBack(); toast('Nothing else in the queue'); return; }
-  const prev = it.deferred;
-  advance('up'); idx--; VIEW.splice(idx, 1); VIEW.push(it); ITEMS = [...ITEMS.filter(x => x.id !== it.id), it];
-  handled.delete(it.id); drawChips();
-  try { const r = await api('/api/defer', {id: it.id}); it.deferred = r.deferred; toast('Moved to the back', () => undoLater(it, prev)); }
-  catch (e) { softErr(e); }
-}
-async function undoLater(it, prev) {
-  try { await api('/api/defer', {id: it.id, undo: true, prev}); it.deferred = prev || null; rebuild(it.id); }
-  catch (e) { softErr(e); }
-}
 // pick: caption sheet with the draft + its alternatives
 function capOptions(it) {
   const seen = new Set(), out = [];
@@ -646,17 +772,25 @@ function openPick() {
     $$('#pAlts .opt').forEach(b => b.onclick = () => { $('#pCap').value = opts[+b.dataset.i].text; updPick(); draw(); });
   };
   $('#pCap').oninput = () => { updPick(); draw(); };
+  setMustBtn(false);
   draw(); updPick(); openSheet('#shPick');
 }
 function updPick() {
   const n = $('#pCap').value.trim().length;
   $('#pCount').textContent = n > 280 ? n + ' chars' : ''; $('#pGo').disabled = !n || n > 25000;
 }
+// ★ Must post: off by default each time the sheet opens
+let pickMust = false;
+function setMustBtn(on) {
+  pickMust = on; const b = $('#pMust');
+  b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.textContent = (on ? '★' : '☆') + ' Must post';
+}
+$('#pMust').onclick = () => setMustBtn(!pickMust);
 $('#pGo').onclick = async () => {
   const it = VIEW[idx]; if (!it) return;
-  const caption = $('#pCap').value.trim();
+  const caption = $('#pCap').value.trim(), must = pickMust;
   $('#pGo').disabled = true;
-  try { await api('/api/decide', {id: it.id, action: 'pick', caption}); closeSheet(true); advance(1); toast('Picked · in Library', () => undoTo(it)); }
+  try { await api('/api/decide', {id: it.id, action: 'pick', caption, must}); closeSheet(true); advance(1); toast(must ? 'Loved · ★ Must post' : 'Loved · in Library', () => undoTo(it)); }
   catch (e) { softErr(e); }
   $('#pGo').disabled = false;
 };
@@ -674,22 +808,11 @@ $$('#shWhy [data-lean]').forEach(b => b.onclick = async () => {
   catch (e) { softErr(e); }
 });
 
-// ================= mid: fine but not good enough (optional note) =================
-function openMid() {
-  const it = VIEW[idx]; if (!it) return;
-  if (current) current.style.transform = 'translateY(-40px)';
-  $('#mTxt').value = ''; openSheet('#shMid'); setTimeout(() => $('#mTxt').focus({preventScroll: true}), 320);
-}
-$('#mGo').onclick = async () => {
-  const it = VIEW[idx], note = $('#mTxt').value.trim(); if (!it) return;
-  try { await api('/api/decide', {id: it.id, action: 'mid', note}); closeSheet(true); advance('up'); toast('Mid', () => undoTo(it)); }
-  catch (e) { softErr(e); }
-};
-
 // ================= edit request (from a swipe card or the post detail) =================
 let editTarget = null;
 function openEdit(it) {
   if (!it) return; editTarget = it;
+  if (!D.open && current && VIEW[idx] === it) current.style.transform = 'translateY(-40px)';
   $('#eTxt').value = ''; resetRefs('e'); openSheet('#shEdit'); setTimeout(() => $('#eTxt').focus({preventScroll: true}), 320);
 }
 $('#eGo').onclick = async () => {
@@ -743,27 +866,85 @@ function drawRefs(pre) {
 const refKeys = pre => REFS[pre].filter(r => r.key).map(r => r.key);
 function resetRefs(pre) { REFS[pre] = []; drawRefs(pre); }
 
-// ================= library =================
-let libF = 'all', LIB = null;
+// ================= library: a heading per idea, its loved pieces listed under it, grouped by angle =================
+let libF = 'all', LIB = null, libSig = '', libPending = false;
 async function loadLib() {
-  try { const d = await api('/api/library?f=' + libF); LIB = d; drawLib(); }
+  try { const d = await api('/api/library?f=' + (libF === 'must' ? 'all' : libF)); LIB = d; drawLib(); }
   catch (e) { softErr(e); }
 }
-function tileHtml(it, sub) {
-  const img = it.tile ? `<img src="${it.tile}" alt="" loading="lazy">` : `<span class="ph">${esc(shortTitle(it.title))}</span>`;
-  const ty = it.kind === 'video' ? `<svg viewBox="0 0 24 24" style="fill:#fff"><path d="M7 4.5v15l13-7.5z"/></svg>` : `<svg viewBox="0 0 24 24" style="fill:none;stroke:#fff;stroke-width:2.4"><rect x="3" y="5" width="18" height="14" rx="2"/></svg>`;
-  return `<button class="tile" data-id="${esc(it.id)}">${img}${it.status === 'edit' ? '<span class="bd">In edit</span>' : ''}<span class="ty">${ty}</span>
-    <span class="tt">${esc(shortTitle(it.title))}${sub ? `<i>${esc(sub)}</i>` : ''}</span></button>`;
+const libPlaying = () => $$('#libList video').some(v => !v.paused && !v.ended);
+function groupLib(items) {
+  const ideas = new Map();
+  for (const it of items) {
+    const a = angleOf(it), key = a.idea || a.code || it.batch || 'Other';
+    let g = ideas.get(key);
+    if (!g) ideas.set(key, g = {title: a.idea ? (a.code && !a.idea.startsWith(a.code) ? a.code + ' · ' + a.idea : a.idea) : a.code || it.batch || 'Other', angles: new Map(), n: 0});
+    const ak = a.angle || '#' + it.id;
+    let s = g.angles.get(ak); if (!s) g.angles.set(ak, s = {angle: a.angle, name: a.name, rows: []});
+    s.rows.push({it, a}); g.n++;
+  }
+  const out = [...ideas.values()];
+  for (const g of out) {
+    const must = s => s.rows.some(r => r.it.must);
+    for (const s of g.angles.values()) s.rows.sort((x, y) => (y.it.must - x.it.must) || String(x.a.ab || '').localeCompare(String(y.a.ab || '')));
+    // must-post angles first, then angles in order (C6-1, C6-2, C6-O), unlabelled pieces last
+    g.list = [...g.angles.values()].sort((x, y) => (must(y) - must(x)) || ((x.angle == null) - (y.angle == null)) ||
+      (x.angle && y.angle ? x.angle.localeCompare(y.angle, undefined, {numeric: true}) : 0));
+  }
+  return out;
 }
-function drawLib() {
+function libRow({it, a}) {
+  const {ar, arn} = arOf(it), arS = ar ? `aspect-ratio:${ar}` : 'aspect-ratio:4/5';
+  let media = '';
+  if (it.kind === 'video' && it.media) media = `<video data-src="${it.media}" ${it.poster ? `data-poster="${it.poster}"` : ''} controls playsinline preload="none" style="${arS}"></video>`;
+  else if (it.kind === 'still' && it.media) media = `<img data-src="${it.media}" alt="" style="${arS}">`;
+  else if (it.tile) media = `<img data-src="${it.tile}" alt="" style="${arS}">`;
+  const what = a.angle ? a.scene : a.name;
+  return `<article class="lvid" data-id="${esc(it.id)}" style="--arn:${arn}">${media ? `<div class="lm">${media}</div>` : ''}
+    <div class="lt"><div class="lhd">${a.ab ? `<span class="tag">${a.ab}</span>` : ''}${it.must ? '<span class="mustb">★ Must post</span>' : ''}${it.status === 'edit' ? '<span class="tag amber">In edit</span>' : ''}${what ? `<span>${esc(what)}</span>` : ''}${it.v > 1 ? `<span>v${it.v}</span>` : ''}</div>
+      <p class="lc">${esc(it.chosen || it.caption || it.title)}</p>
+      <div class="la"><button class="ob" data-la="open">Open</button><button class="ob" data-la="copy">Copy caption</button><button class="ob${it.must ? ' must' : ''}" data-la="must">${it.must ? '★ Must post' : '☆ Must post'}</button></div></div></article>`;
+}
+// media loads only when a row comes near the screen (posters + video metadata), the box is reserved from w/h so nothing jumps
+const libIO = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return; const m = e.target; libIO.unobserve(m);
+  if (m.dataset.poster) m.poster = m.dataset.poster;
+  if (m.tagName === 'VIDEO') m.preload = 'metadata';
+  m.src = m.dataset.src;
+}), {root: $('#libScroll'), rootMargin: '600px 0px'}) : null;
+function drawLib(force) {
   const d = LIB; if (!d) return;
-  const c = d.counts || {picked: 0, edit: 0};
-  $$('#libSeg button').forEach(b => { const f = b.dataset.f; b.classList.toggle('on', f === libF); b.textContent = (f === 'all' ? 'All ' + (c.picked + c.edit) : f === 'picked' ? 'Picked ' + c.picked : 'In edit ' + c.edit); });
-  $('#libGrid').innerHTML = d.items.map(it => tileHtml(it, it.shots > 2 ? (it.shots - (it.kind === 'video' ? 2 : 0)) + ' screenshots' : '')).join('');
-  $('#libBlank').hidden = !!d.items.length;
-  $('#libBlank').textContent = libF === 'edit' ? 'Nothing waiting on an edit.' : 'Nothing here yet. Swipe right on a draft to pick it.';
-  $$('#libGrid .tile').forEach(t => t.onclick = () => openDetail(t.dataset.id));
+  const c = d.counts || {picked: 0, edit: 0, must: 0};
+  $$('#libSeg button').forEach(b => { const f = b.dataset.f; b.classList.toggle('on', f === libF);
+    b.textContent = f === 'all' ? 'All ' + (c.picked + c.edit) : f === 'picked' ? 'Loved ' + c.picked : f === 'edit' ? 'In edit ' + c.edit : '★ Must ' + (c.must || 0); });
+  const items = libF === 'must' ? d.items.filter(it => it.must) : d.items;
+  const sig = libF + '|' + JSON.stringify(items.map(it => [it.id, it.v, it.status, it.must, it.chosen, it.media, it.tile, it.idea]));
+  if (!force && sig === libSig) return;
+  if (!force && libPlaying()) { libPending = true; return; }   // never cut off a video he is watching; redraw when it stops
+  libSig = sig; libPending = false;
+  $('#libList').innerHTML = groupLib(items).map(g => `<h2 class="lidea">${esc(g.title)}<span>${g.n} ${g.n > 1 ? 'pieces' : 'piece'}</span></h2>` +
+    g.list.map(s => `<section class="lang">${s.angle ? `<h3><span class="tag l">${esc(s.angle)}</span>${esc(s.name)}${s.rows.length > 1 ? `<span class="n">${s.rows.length} loved</span>` : ''}</h3>` : ''}` +
+      s.rows.map(libRow).join('') + '</section>').join('')).join('');
+  $('#libBlank').hidden = !!items.length;
+  $('#libBlank').textContent = libF === 'edit' ? 'Nothing waiting on an edit.' : libF === 'must' ? 'No must-post pieces yet. Turn on ★ Must post when you love a draft.' : 'Nothing here yet. Swipe right on a draft to love it.';
+  $$('#libList [data-src]').forEach(m => libIO ? libIO.observe(m) : (m.dataset.poster && (m.poster = m.dataset.poster), m.src = m.dataset.src));
+  $$('#libList video').forEach(v => v.addEventListener('pause', () => { if (libPending) setTimeout(() => libPending && !libPlaying() && drawLib(), 400); }));
 }
+$('#libList').addEventListener('click', async e => {
+  const row = e.target.closest('.lvid'); if (!row) return;
+  const it = LIB && LIB.items.find(x => x.id === row.dataset.id); if (!it) return;
+  const b = e.target.closest('[data-la]');
+  if (!b) { if (e.target.closest('.lc')) openDetail(it.id); return; }
+  if (b.dataset.la === 'open') openDetail(it.id);
+  if (b.dataset.la === 'copy') { try { await navigator.clipboard.writeText(it.chosen || it.caption || ''); toast('Caption copied'); } catch { toast('Copy failed'); } }
+  if (b.dataset.la === 'must') {
+    b.disabled = true;
+    try { await api('/api/must', {id: it.id, must: !it.must}); it.must = !it.must; LIB.counts.must = (LIB.counts.must || 0) + (it.must ? 1 : -1); toast(it.must ? '★ Must post' : 'Not a must post'); drawLib(true); }
+    catch (err) { softErr(err); b.disabled = false; }
+  }
+});
+// one video at a time
+document.addEventListener('play', e => { if (e.target.closest && e.target.closest('#libList')) $$('#libList video').forEach(v => v !== e.target && v.pause()); }, true);
 $$('#libSeg button').forEach(b => b.onclick = () => { libF = b.dataset.f; drawLib(); loadLib(); });
 
 // ================= posted =================
@@ -791,13 +972,13 @@ async function openDetail(id, keep) {
     const it = await api('/api/item/' + encodeURIComponent(id));
     const sameItem = D.it && D.it.id === id;
     D.it = it; D.open = true;
-    if (!keep || !sameItem) { D.side = it.kind === 'video' ? 'video' : 'image'; D.tool = false; D.imgIx = -1; D.cap = null; $('#dScroll').scrollTop = 0; }
+    if (!keep || !sameItem) { D.side = it.kind === 'video' ? 'video' : 'image'; D.tool = false; D.imgIx = -1; D.cap = null; $('#dScroll').scrollTop = 0; $('#dMain').scrollTop = 0; $('#dSide').scrollTop = 0; }
     D.imgs = imagesOf(it);
     if (D.imgIx < 0 || D.imgIx >= D.imgs.length) { const p = D.imgs.findIndex(x => x.isPost); D.imgIx = p >= 0 ? p : 0; }
     if (D.cap == null) D.cap = it.chosen || it.caption || '';
     drawDetail();
     $('#detail').classList.add('on');
-    $$('.card video').forEach(v => v.pause());
+    $$('.card video, #libList video').forEach(v => v.pause());
   } catch (e) { softErr(e); }
 }
 function closeDetail() {
@@ -805,7 +986,7 @@ function closeDetail() {
   const v = $('#dVideo'); if (v) v.pause();
   setTimeout(() => { if (!D.open) $('#dStage').innerHTML = ''; }, 300);
   if (tab === 'vLib') loadLib(); else if (tab === 'vPosted') loadPosted();
-  else { const cv = current && current.querySelector('video'); cv && cv.play().catch(() => {}); }
+  else if (current) playVid(current.querySelector('video'));
 }
 $('#dBack').onclick = closeDetail;
 function imagesOf(it) {
@@ -818,19 +999,21 @@ function imagesOf(it) {
 function statusLabel(it) { return {picked: 'Picked', posted: 'Posted', edit: 'In edit', pass: 'Passed'}[it.status] || 'New'; }
 function drawDetail() {
   const it = D.it;
-  $('#dTitle').textContent = shortTitle(it.title);
-  $('#dSub').textContent = [it.batch, it.v > 1 ? 'v' + it.v : '', it.status === 'posted' && it.postedAt ? 'posted ' + dayName(it.postedAt) : it.decidedAt ? 'picked ' + dayName(it.decidedAt) : ''].filter(Boolean).join(' · ');
+  const a = angleOf(it);
+  $('#dTitle').textContent = a.angle ? a.name + (a.scene ? ' · ' + a.scene : '') : shortTitle(it.title);
+  $('#dSub').textContent = [a.angle ? a.angle + (a.ab ? ' ' + a.ab : '') : '', a.idea || it.batch, it.must ? '★ Must post' : '', it.v > 1 ? 'v' + it.v : '', it.status === 'posted' && it.postedAt ? 'posted ' + dayName(it.postedAt) : it.decidedAt ? 'picked ' + dayName(it.decidedAt) : ''].filter(Boolean).join(' · ');
   $('#dStatus').textContent = statusLabel(it); $('#dStatus').className = 'st' + (it.status === 'edit' ? ' amber' : '');
   const vid = it.kind === 'video';
   $('#dSeg').querySelector('[data-side=video]').hidden = !vid;
   $('#dSeg').querySelector('[data-side=image]').textContent = 'Image' + (D.imgs.length ? ' · ' + D.imgs.length : '');
   $('#dShotBtn').hidden = !vid; $('#dShotBtn').classList.toggle('on', D.tool);
   $$('#dSeg button').forEach(b => b.classList.toggle('on', b.dataset.side === D.side));
+  $('#detail').classList.toggle('tool', D.tool && D.side === 'video'); $('#detail').classList.toggle('imgs', D.side === 'image');
   drawStage(); drawCaps(); drawActsD(); drawInfo();
 }
 function drawStage() {
   const it = D.it, st = $('#dStage');
-  if (it.w && it.h) st.style.aspectRatio = it.w + '/' + it.h;
+  if (it.w && it.h) { st.style.aspectRatio = it.w + '/' + it.h; st.style.setProperty('--arn', (it.w / it.h).toFixed(4)); }
   $('#dTool').classList.toggle('on', D.tool && D.side === 'video');
   $('#dImgUi').hidden = D.side !== 'image';
   if (D.side === 'video') {
@@ -995,7 +1178,16 @@ function drawActsD() {
   pb.innerHTML = posted ? 'Mark as not posted' : icon('check', 'width:18px;height:18px') + 'Mark as posted';
   pb.hidden = !['picked', 'posted'].includes(it.status);
   $('[data-da=edit]').disabled = it.status === 'edit';
+  const mb = $('#dMust');
+  mb.hidden = !['picked', 'posted', 'edit'].includes(it.status);
+  mb.className = 'ob' + (it.must ? ' must' : ''); mb.textContent = it.must ? '★ Must post' : '☆ Must post';
 }
+$('#dMust').onclick = async () => {
+  const it = D.it, to = !it.must; $('#dMust').disabled = true;
+  try { await api('/api/must', {id: it.id, must: to}); it.must = to; toast(to ? '★ Must post' : 'Not a must post'); drawDetail(); }
+  catch (e) { softErr(e); }
+  $('#dMust').disabled = false;
+};
 $('#dPosted').onclick = async () => {
   const it = D.it, to = it.status !== 'posted';
   try {
@@ -1104,6 +1296,25 @@ function drawSkipped() {
   });
   const m = $('#skipMore'); if (m) m.onclick = () => { m.disabled = true; openSkipped(true); };
 }
+
+// ================= keyboard (laptop): ← trash · → love · E edit · Space play; idea/training cards: ← no · → want/love · ↑ why =================
+document.addEventListener('keydown', e => {
+  const t = e.target, typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+  if (e.key === 'Escape') { if (sheetOpen) { e.preventDefault(); closeSheet(); } else if (D.open) { e.preventDefault(); closeDetail(); } return; }
+  if (sheetOpen === '#shPick' && e.key === 'Enter' && (!typing || e.ctrlKey || e.metaKey)) { e.preventDefault(); if (!$('#pGo').disabled) $('#pGo').click(); return; }
+  if (sheetOpen === '#shPick' && !typing && (e.key === 'm' || e.key === 'M')) { e.preventDefault(); setMustBtn(!pickMust); return; }
+  if (sheetOpen === '#shEdit' && e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $('#eGo').click(); return; }
+  if (typing || e.ctrlKey || e.metaKey || e.altKey || sheetOpen || D.open || tab !== 'vSwipe' || busy || $('#login').classList.contains('on')) return;
+  const it = VIEW[idx]; if (!it || !current) return;
+  const k = e.key, card = isCard(it);
+  if (k === 'ArrowLeft') skip();
+  else if (k === 'ArrowRight') card ? love() : openPick();
+  else if ((k === 'e' || k === 'E') && !card) openEdit(it);
+  else if ((k === 'ArrowUp' || k === 'w' || k === 'W') && card) openWhy();
+  else if (k === ' ') { const v = current.querySelector('video'); if (!v) return; v.paused ? playVid(v) : v.pause(); }
+  else return;
+  e.preventDefault();
+});
 
 // ================= login =================
 $('#lGo').onclick = async () => {
